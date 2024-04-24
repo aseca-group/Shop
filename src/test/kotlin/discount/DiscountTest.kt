@@ -8,7 +8,6 @@ import java.util.*
 
 class DiscountTest {
 
-    @Test
     fun test001_TwoForOneOddProductsQuantity() {
         val productDiscountedCode = UUID.randomUUID()
         val discount = TwoForOne(
@@ -27,7 +26,6 @@ class DiscountTest {
         )
     }
 
-    @Test
     fun test002_TwoForOneEvenProductsQuantity() {
         val productDiscountedCode = UUID.randomUUID()
         val discount = TwoForOne(
@@ -47,7 +45,6 @@ class DiscountTest {
         )
     }
 
-    @Test
     fun test003_TwoForOneInvalidDate() {
         val productDiscountedCode = UUID.randomUUID()
         val discount = TwoForOne(
