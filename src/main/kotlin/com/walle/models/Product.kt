@@ -5,8 +5,7 @@ import org.example.product.Price
 
 @Serializable
 class Product (
-    val product_id: Int,
+    val id: Int,
     val price: Price,
-
     ) {
 }
