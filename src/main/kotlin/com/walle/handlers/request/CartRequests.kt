@@ -1,5 +1,6 @@
 package com.walle.handlers.request
 
+import com.walle.exceptions.InvalidDataException
 import com.walle.models.Cart
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -8,7 +9,7 @@ import io.ktor.http.*
 
 private const val url = "http://control/cart"
 
-suspend fun getCartFormTower(userId: Int): Cart {
+suspend fun getCartByUserId(userId: Int): Cart {
     val client = HttpClient()
 
     try {
@@ -17,20 +18,22 @@ suspend fun getCartFormTower(userId: Int): Cart {
                 parameters.append("userId", userId.toString())
             }
         }
+
+        if (response.status != HttpStatusCode.OK) throw InvalidDataException("Invalid parameters")
         return response.body<Cart>()
     } catch (e: Exception) {
-        println("Error al obtener el carrito de la torre de control: ${e.message}")
         throw e
     } finally {
         client.close()
     }
 }
 
-suspend fun addItemToCart(userId: Int, productId: Int) {
+suspend fun updateCartWithProduct(userId: Int, productId: Int, action: String) {
     val client = HttpClient()
+    val target = "$url/$action"
 
     try {
-        val response = client.put(url) {
+        val response = client.put(target) {
             contentType(ContentType.Application.Json)
             url {
                 parameters.append("userId", userId.toString())
@@ -38,14 +41,26 @@ suspend fun addItemToCart(userId: Int, productId: Int) {
             }
         }
 
-        if (response.status == HttpStatusCode.OK) {
-            println("Carrito actualizado en la torre de control")
-        } else {
-            println("Error al actualizar el carrito en la torre de control. Código de estado: ${response.status}")
-        }
+        if(response.status != HttpStatusCode.OK) throw InvalidDataException("Invalid parameters")
     } catch (e: Exception) {
-        println("Error al actualizar el carrito en la torre de control: ${e.message}")
         throw e
+    } finally {
+        client.close()
+    }
+}
+
+suspend fun emptyCartByUserId(userId: Int) {
+    val client = HttpClient()
+    val target = "$url/empty"
+
+    try {
+        val response = client.put(target) {
+            contentType(ContentType.Application.Json)
+        }
+
+        if (response.status != HttpStatusCode.OK) throw InvalidDataException("Invalid parameters")
+    } catch (e: Exception) {
+         throw e
     } finally {
         client.close()
     }
