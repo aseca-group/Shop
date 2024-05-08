@@ -1,20 +1,27 @@
 package com.walle.handlers.service
 
 import com.walle.exceptions.InvalidDataException
-import com.walle.handlers.processor.ShopCalculator
+import com.walle.handlers.processor.OrderProcessorImpl
 import com.walle.handlers.processor.ShopCalculatorImpl
-import com.walle.handlers.request.addressExistsById
-import com.walle.handlers.request.cardExistsById
-import com.walle.handlers.request.userExistsById
-import com.walle.models.Chart
+import com.walle.handlers.request.*
+import com.walle.models.Cart
+import com.walle.models.Order
 import com.walle.models.OrderForm
+
+private val orderProcessor = OrderProcessorImpl(ShopCalculatorImpl())
 
 class OrderService : Service {
 
     suspend fun generateOrder(form: OrderForm) {
         validateData(form)
-        val total = getTotal(form.chart)
+        val cart = getCartByUserId(form.customer_id)
+        val order = orderProcessor.processOrder(form, cart)
+        sendOrder(order)
+    }
 
+    suspend fun getOrders(userId: Int): List<Order> {
+        userExistsById(userId)
+        return getOrdersById(userId)
     }
 
     private suspend fun validateData(form: OrderForm) {
@@ -27,7 +34,7 @@ class OrderService : Service {
                 addressExistsById(form.address_id)
     }
 
-    private fun getTotal(chart: Chart): Double {
+    private fun getTotal(chart: Cart): Double {
         val products = chart.products
         return ShopCalculatorImpl().calculateTotal(products)
     }
