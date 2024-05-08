@@ -3,7 +3,7 @@ package com.walle.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Chart(
+class Cart(
     val products: List<Product>,
 ) {
 }
