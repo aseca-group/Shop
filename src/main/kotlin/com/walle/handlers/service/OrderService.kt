@@ -12,10 +12,11 @@ private val orderProcessor = OrderProcessorImpl(ShopCalculatorImpl())
 
 class OrderService : Service {
 
-    suspend fun generateOrder(form: OrderForm): Order {
+    suspend fun generateOrder(form: OrderForm) {
         validateData(form)
         val cart = getCartByUserId(form.customer_id)
-        return orderProcessor.processOrder(form, cart)
+        val order = orderProcessor.processOrder(form, cart)
+        sendOrder(order)
     }
 
     suspend fun getOrders(userId: Int): List<Order> {

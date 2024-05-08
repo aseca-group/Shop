@@ -27,3 +27,17 @@ suspend fun getOrdersById(userId: Int): List<Order> {
         client.close()
     }
 }
+
+suspend fun sendOrder(order: Order) {
+    val client = HttpClient()
+
+    try {
+        val response = client.post(url)
+
+        if (response.status != HttpStatusCode.OK) throw InvalidDataException("Invalid parameters for the order")
+    } catch (e: Exception) {
+        throw e
+    } finally {
+        client.close()
+    }
+}
